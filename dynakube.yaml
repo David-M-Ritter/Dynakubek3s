@@ -1,0 +1,48 @@
+apiVersion: v1
+metadata:
+  name: ritterk3scluster
+  namespace: dynatrace
+type: Opaque
+---
+apiVersion: dynatrace.com/v1beta4
+kind: DynaKube
+metadata:
+  name: ritterk3scluster
+  namespace: dynatrace
+  annotations:
+    feature.dynatrace.com/k8s-app-enabled: "true"
+# Link to api reference for further information: https://docs.dynatrace.com/docs/ingest-from/setup-on-k8s/reference/dynakube-parameters
+spec:
+  apiUrl: https://vuf89638.sprint.dynatracelabs.com/api
+  networkZone: ritter
+  metadataEnrichment:
+    enabled: true
+  oneAgent:
+    hostGroup: ritter
+    cloudNativeFullStack:
+      tolerations:
+        - effect: NoSchedule
+          key: node-role.kubernetes.io/master
+          operator: Exists
+        - effect: NoSchedule
+          key: node-role.kubernetes.io/control-plane
+          operator: Exists
+  activeGate:
+    capabilities:
+      - routing
+      - kubernetes-monitoring
+      - debugging
+    resources:
+      requests:
+        cpu: 500m
+        memory: 1.5Gi
+      limits:
+        cpu: 1000m
+        memory: 1.5Gi
+  templates:
+    extensionExecutionController:
+      imageRef:
+        repository: vuf89638.sprint.dynatracelabs.com/linux/dynatrace-eec
+        tag: latest
+  extensions: {}
+  logMonitoring: {}
